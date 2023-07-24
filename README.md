@@ -2,7 +2,9 @@
 
 Tools for automating work with [GitHub](https://github.com/).
 
-## Creating repository
+## Syntax
+
+### Creating repository
 
 - [repo.create.sh](repo.create.sh)
   - `-x 'TOKEN'`  
@@ -29,7 +31,7 @@ Tools for automating work with [GitHub](https://github.com/).
   - `-u`  
     Create an initial commit with empty README.
 
-## Deleting repository
+### Deleting repository
 
 - [repo.delete.sh](repo.delete.sh)
   - `-x 'TOKEN'`  
@@ -39,7 +41,7 @@ Tools for automating work with [GitHub](https://github.com/).
   - `-r 'REPO_1;REPO_2;REPO_3'`  
     Repository name (array).
 
-## Updating topics
+### Updating topics
 
 - [repo.topics.sh](repo.topics.sh)
   - `-x 'TOKEN'`  
@@ -51,7 +53,7 @@ Tools for automating work with [GitHub](https://github.com/).
   - `-t 'TOPIC_1;TOPIC_2;TOPIC_3'`  
     Topic name (array).
 
-## Transfer repository
+### Transferring repository
 
 - [repo.transfer.sh](repo.transfer.sh)
   - `-x 'TOKEN'`  
@@ -63,7 +65,7 @@ Tools for automating work with [GitHub](https://github.com/).
   - `-r 'REPO_1;REPO_2;REPO_3'`  
     Repository name (array).
 
-## Updating repository
+### Updating repository
 
 - [repo.update.sh](repo.update.sh)
   - `-x 'TOKEN'`  
