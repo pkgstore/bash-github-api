@@ -1,6 +1,6 @@
 #!/usr/bin/bash -e
 #
-# Removing repository on GitHub.
+# Deleting repository on GitHub.
 #
 # @package    Bash
 # @author     Kitsune Solar <mail@kitsune.solar>
@@ -10,21 +10,21 @@
 # @link       https://github.com/pkgstore
 # -------------------------------------------------------------------------------------------------------------------- #
 
-(( EUID == 0 )) && { echo >&2 "This script should not be run as root!"; exit 1; }
+(( EUID == 0 )) && { echo >&2 'This script should not be run as root!'; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # CONFIGURATION.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 curl="$( command -v curl )"
-sleep="2"
+sleep='2'
 
 # Help.
 read -r -d '' help <<- EOF
 Options:
   -x 'TOKEN'                            GitHub user token.
   -o 'OWNER'                            Repository owner (organization).
-  -r 'REPO_1;REPO_2;REPO_3'             Repository name array.
+  -r 'REPO_1;REPO_2;REPO_3'             Repository name (array).
 EOF
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -33,13 +33,13 @@ EOF
 
 OPTIND=1
 
-while getopts "x:o:r:h" opt; do
+while getopts 'x:o:r:h' opt; do
   case ${opt} in
     x)
       token="${OPTARG}"
       ;;
     o)
-      org="${OPTARG}"
+      owner="${OPTARG}"
       ;;
     r)
       repos="${OPTARG}"; IFS=';' read -ra repos <<< "${repos}"
@@ -52,30 +52,31 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#repos[@]} )) && exit 1
+(( ! ${#repos[@]} )) && { echo >&2 '[ERROR] Repository name not specified!'; exit 1; }
+[[ -z "${token}" ]] && { echo >&2 '[ERROR] Token not specified!'; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # INITIALIZATION.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 init() {
-  repo_remove
+  repo_delete
 }
 
 # -------------------------------------------------------------------------------------------------------------------- #
-# GITHUB: REMOVE REPOSITORY.
+# GITHUB: DELETE REPOSITORY.
 # -------------------------------------------------------------------------------------------------------------------- #
 
-repo_remove() {
+repo_delete() {
   for repo in "${repos[@]}"; do
-    echo "" && echo "--- OPEN: '${repo}'"
+    echo '' && echo "--- OPEN: '${repo}'"
 
     ${curl} -X DELETE \
       -H "Authorization: Bearer ${token}" \
-      -H "Accept: application/vnd.github+json" \
-      "https://api.github.com/repos/${org}/${repo}"
+      -H 'Accept: application/vnd.github+json' \
+      "https://api.github.com/repos/${owner}/${repo}"
 
-    echo "" && echo "--- DONE: '${repo}'" && echo ""; sleep ${sleep}
+    echo '' && echo "--- DONE: '${repo}'" && echo ''; sleep ${sleep}
   done
 }
 

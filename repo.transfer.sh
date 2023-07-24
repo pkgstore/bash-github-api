@@ -10,14 +10,14 @@
 # @link       https://github.com/pkgstore
 # -------------------------------------------------------------------------------------------------------------------- #
 
-(( EUID == 0 )) && { echo >&2 "This script should not be run as root!"; exit 1; }
+(( EUID == 0 )) && { echo >&2 'This script should not be run as root!'; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # CONFIGURATION.
 # -------------------------------------------------------------------------------------------------------------------- #
 
 curl="$( command -v curl )"
-sleep="2"
+sleep='2'
 
 # Help.
 read -r -d '' help <<- EOF
@@ -25,7 +25,7 @@ Options:
   -x 'TOKEN'                            GitHub user token.
   -o 'OWNER_OLD'                        OLD repository owner (organization).
   -n 'OWNER_NEW'                        NEW repository owner (organization).
-  -r 'REPO_1;REPO_2;REPO_3'             Repository name array.
+  -r 'REPO_1;REPO_2;REPO_3'             Repository name (array).
 EOF
 
 # -------------------------------------------------------------------------------------------------------------------- #
@@ -34,7 +34,7 @@ EOF
 
 OPTIND=1
 
-while getopts "x:o:n:r:h" opt; do
+while getopts 'x:o:n:r:h' opt; do
   case ${opt} in
     x)
       token="${OPTARG}"
@@ -56,7 +56,10 @@ done
 
 shift $(( OPTIND - 1 ))
 
-(( ! ${#repos[@]} )) || [[ -z "${owner_old}" ]] || [[ -z "${owner_new}" ]] && exit 1
+(( ! ${#repos[@]} )) && { echo >&2 '[ERROR] Repository name not specified!'; exit 1; }
+[[ -z "${token}" ]] && { echo >&2 '[ERROR] Token not specified!'; exit 1; }
+[[ -z "${owner_old}" ]] && { echo >&2 '[ERROR] OLD repository owner (organization) not specified!'; exit 1; }
+[[ -z "${owner_new}" ]] && { echo >&2 '[ERROR] NEW repository owner (organization) not specified!'; exit 1; }
 
 # -------------------------------------------------------------------------------------------------------------------- #
 # INITIALIZATION.
@@ -72,15 +75,19 @@ init() {
 
 repo_transfer() {
   for repo in "${repos[@]}"; do
-    echo "" && echo "--- OPEN: '${repo}'"
+    echo '' && echo "--- OPEN: '${repo}'"
 
     ${curl} -X POST \
       -H "Authorization: Bearer ${token}" \
-      -H "Accept: application/vnd.github+json" \
+      -H 'Accept: application/vnd.github+json' \
       "https://api.github.com/repos/${owner_old}/${repo}/transfer" \
-      -d "{\"new_owner\":\"${owner_new}\"}"
+      -d @- << EOF
+{
+  "new_owner": "${owner_new}"
+}
+EOF
 
-    echo "" && echo "--- DONE: '${repo}'" && echo ""; sleep ${sleep}
+    echo '' && echo "--- DONE: '${repo}'" && echo ''; sleep ${sleep}
   done
 }
 
